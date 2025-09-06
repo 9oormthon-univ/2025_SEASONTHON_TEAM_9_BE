@@ -12,13 +12,17 @@ import com.clucid.server.auth.entity.UserDetailsImpl;
 import com.clucid.server.infra.s3.FileNameConstructor;
 import com.clucid.server.infra.s3.ObjectStorageSender;
 import com.clucid.server.terms.controller.TermUseCase;
+import com.clucid.server.terms.entity.controller.RealCreateTermRequest;
 import com.clucid.server.terms.entity.model.TagOnlyNameModel;
 import com.clucid.server.terms.entity.model.TermIdAndRelsModel;
 import com.clucid.server.terms.entity.model.TermIdAndTagsModel;
 import com.clucid.server.terms.entity.model.TermModel;
 import com.clucid.server.terms.entity.model.TermOnlyNameAndDefModel;
 import com.clucid.server.terms.entity.model.TermWithTagAndRelModel;
+import com.clucid.server.terms.entity.model.external.CreateTermResponse;
+import com.clucid.server.terms.entity.model.external.CreateTermResult;
 import com.clucid.server.terms.entity.usecase.CreateTermCommand;
+import com.clucid.server.terms.external.TermLlmAdapter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +43,7 @@ public class TermUseCaseImpl implements TermUseCase {
 		TermModel term = TermModel.builder()
 			.nameKr(request.getNameKr())
 			.nameEn(request.getNameEn())
-			.definition(request.getDefinition())
+			.definitions(List.of(request.getDefinition()))
 			.imgUrl(request.getImgUrl())
 			.build();
 		term = termRepository.saveTermOnly(term);
@@ -83,7 +87,7 @@ public class TermUseCaseImpl implements TermUseCase {
 			.id(sourceTerm.getId())
 			.nameKr(sourceTerm.getNameKr())
 			.nameEn(sourceTerm.getNameEn())
-			.definition(sourceTerm.getDefinition())
+			.definitions(sourceTerm.getDefinitions())
 			.imgUrl(sourceTerm.getImgUrl())
 			.tags(tags)
 			.relations(relations)
@@ -111,6 +115,36 @@ public class TermUseCaseImpl implements TermUseCase {
 		});
 	}
 
+	@Override
+	public void addTagsToTerm(String termId, String tagId) {
+		tagRepository.addTagsToTerm(List.of(tagId),termId);
+	}
+
+	private final TermLlmAdapter termLlmAdapter;
+	@Override
+	public CreateTermResult test(String term) {
+		return termLlmAdapter.createTerm(term);
+	}
+
+	@Override
+	@Transactional
+	public void createRealTerm(RealCreateTermRequest request) {
+		if (termRepository.findByNameKr(request.getTermKr()).isPresent()) {
+			throw new IllegalArgumentException("Term already exists");
+		}
+		TermModel term = TermModel.builder()
+			.nameKr(request.getTermKr())
+			.nameEn(request.getTermEn())
+			.definitions(request.getDefinitions())
+			.examples(request.getExamples())
+			.imgUrl(request.getImgUrl())
+			.build();
+		term = termRepository.saveTermOnly(term);
+		if (request.getTags() != null && !request.getTags().isEmpty()) {
+			tagRepository.addTagsToTermByNames(request.getTags(), term.getId());
+		}
+	}
+
 	private List<TermWithTagAndRelModel> convertToTermWithTagAndRelModels(List<TermModel> terms) {
 
 		List<TermIdAndTagsModel> termsWithTags = tagRepository.findTagsByTerms(terms);
@@ -131,7 +165,7 @@ public class TermUseCaseImpl implements TermUseCase {
 			.id(term.getId())
 			.nameKr(term.getNameKr())
 			.nameEn(term.getNameEn())
-			.definition(term.getDefinition())
+			.definitions(term.getDefinitions())
 			.imgUrl(term.getImgUrl())
 			.tags(termIdToTags.getOrDefault(term.getId(), List.of()))
 			.relations(termIdToRels.getOrDefault(term.getId(), List.of()))

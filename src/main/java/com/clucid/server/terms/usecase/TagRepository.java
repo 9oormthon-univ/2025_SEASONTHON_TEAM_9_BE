@@ -16,4 +16,6 @@ public interface TagRepository {
 	List<TagModel> getAllTags();
 
 	List<TermIdAndTagsModel> findTagsByTerms(List<TermModel> terms);
+
+	void addTagsToTermByNames(List<String> tags, String id);
 }

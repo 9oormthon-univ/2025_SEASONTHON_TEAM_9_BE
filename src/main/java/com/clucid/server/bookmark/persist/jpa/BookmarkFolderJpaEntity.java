@@ -26,6 +26,9 @@ public class BookmarkFolderJpaEntity {
 	@Column(nullable = false, length = 255)
 	private String name;
 
+	@Column(name = "bookmark_count", nullable = false)
+	private int bookmarkCount = 0;
+
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
 
@@ -42,5 +45,14 @@ public class BookmarkFolderJpaEntity {
 	@PreUpdate
 	public void preUpdate() {
 		updatedAt = LocalDateTime.now();
+	}
+
+	public void incrementBookmarkCount() {
+		this.bookmarkCount++;
+	}
+	public void decrementBookmarkCount() {
+		if (this.bookmarkCount > 0) {
+			this.bookmarkCount--;
+		}
 	}
 }

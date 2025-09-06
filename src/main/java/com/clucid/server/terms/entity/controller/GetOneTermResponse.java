@@ -19,8 +19,9 @@ public class GetOneTermResponse {
 	private String id;
 	private String nameKr;
 	private String nameEn;
-	private String definition;
 	private String imgUrl;
+	private List<String> definition;
+	private List<String> examples;
 	private List<TagOnlyNameModel> tags;
 	private List<TermOnlyNameAndDefModel> relations;
 	public static GetOneTermResponse fromModel(TermWithTagAndRelModel termWithTagAndRelModel) {
@@ -28,7 +29,8 @@ public class GetOneTermResponse {
 			.id(termWithTagAndRelModel.getId())
 			.nameKr(termWithTagAndRelModel.getNameKr())
 			.nameEn(termWithTagAndRelModel.getNameEn())
-			.definition(termWithTagAndRelModel.getDefinition())
+			.definition(termWithTagAndRelModel.getDefinitions())
+			.examples(termWithTagAndRelModel.getExamples())
 			.imgUrl(termWithTagAndRelModel.getImgUrl())
 			.tags(termWithTagAndRelModel.getTags())
 			.relations(termWithTagAndRelModel.getRelations())

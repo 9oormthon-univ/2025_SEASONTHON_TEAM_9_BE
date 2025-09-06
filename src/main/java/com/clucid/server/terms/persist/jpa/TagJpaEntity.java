@@ -22,6 +22,8 @@ public class TagJpaEntity {
 	private int refCount = 0;
 
 
+	@Column(name = "on_llm", nullable = false)
+	private String onLlm;
 	@PrePersist
 	public void onPrePersist() {
 		if (this.id == null) {

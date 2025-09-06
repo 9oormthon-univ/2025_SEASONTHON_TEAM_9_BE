@@ -2,6 +2,11 @@ package com.clucid.server.terms.persist.jpa;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.Type;
+
+import com.vladmihalcea.hibernate.type.json.JsonType;
 
 @Entity
 @Table(name = "terms")
@@ -21,8 +26,15 @@ public class TermJpaEntity {
 	@Column(name = "term_english", length = 255)
 	private String termEnglish;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
-	private String definition;
+	@Type(JsonType.class)  // 하이버네이트 6 (hibernate-types 라이브러리 필요)
+	@Column(columnDefinition = "jsonb", nullable = false)
+	@Builder.Default
+	private List<String> definitions = List.of();
+
+	@Type(JsonType.class)  // 하이버네이트 6 (hibernate-types 라이브러리 필요)
+	@Column(columnDefinition = "jsonb", nullable = false)
+	@Builder.Default
+	private List<String> examples = List.of();
 	@Column(name ="img_url", columnDefinition = "TEXT")
 	private String imgUrl;
 

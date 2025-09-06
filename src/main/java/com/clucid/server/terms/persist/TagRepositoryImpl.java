@@ -86,4 +86,16 @@ public class TagRepositoryImpl implements TagRepository {
 		}
 		return result;
 	}
+
+	@Override
+	public void addTagsToTermByNames(List<String> tagNames, String termId) {
+
+		TermJpaEntity termJpaEntity = termJpaRepository.findById(termId).get(); // 이미 있으니 여기 왔기에, get 해도 됨
+		List<TagJpaEntity> tagJpaEntities = tagJpaRepository.findAllByNames(tagNames);
+		tagJpaEntities.forEach(TagJpaEntity::incrementRefCount);
+		List<TermTagJpaEntity> termTagJpaEntities = tagJpaEntities.stream()
+			.map(tag -> TermTagJpaEntity.builder().term(termJpaEntity).tag(tag).tagName(tag.getName()).build())
+			.toList();
+		termTagJpaRepository.saveAll(termTagJpaEntities);
+	}
 }

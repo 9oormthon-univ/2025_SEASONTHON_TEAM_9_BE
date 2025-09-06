@@ -10,5 +10,6 @@ public interface TagJpaRepository extends JpaRepository<TagJpaEntity, String> {
 	@Query("SELECT t FROM TagJpaEntity t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%'))")
 	List<TagJpaEntity> findByNameContainingIgnoreCase(String query);
 
-
+	@Query("SELECT t FROM TagJpaEntity t WHERE t.name IN :tagNames")
+	List<TagJpaEntity> findAllByNames(List<String> tagNames);
 }

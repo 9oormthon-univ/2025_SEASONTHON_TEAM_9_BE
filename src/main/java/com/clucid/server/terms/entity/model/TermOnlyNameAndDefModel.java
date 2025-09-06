@@ -12,6 +12,6 @@ import lombok.Getter;
 public class TermOnlyNameAndDefModel {
 	private String id;
 	private String nameKr;
-	private String definition;
+	private List<String> definitions;
 	private List<TagOnlyNameModel> tags;
 }

@@ -116,7 +116,7 @@ public class TermRepositoryImpl implements TermRepository {
 					return TermOnlyNameAndDefModel.builder()
 						.id(tr.getRelatedTerm().getId())
 						.nameKr(tr.getRelatedTerm().getTermKorean())
-						.definition(tr.getRelatedTerm().getDefinition()) // 아마 영속성 컨텍스트에 넣어서 추가 쿼리는 안날라갈듯
+						.definitions(tr.getRelatedTerm().getDefinitions()) // 아마 영속성 컨텍스트에 넣어서 추가 쿼리는 안날라갈듯
 						.tags(relTermTags.stream().map(TagOnlyNameModel::fromTermTagJpa).toList())
 						.build();
 				})
@@ -140,7 +140,7 @@ public class TermRepositoryImpl implements TermRepository {
 		return termJpaEntities.stream().map(tj -> TermOnlyNameAndDefModel.builder()
 			.id(tj.getId())
 			.nameKr(tj.getTermKorean())
-			.definition(tj.getDefinition())
+			.definitions(tj.getDefinitions())
 			.tags(termTagMap.getOrDefault(tj.getId(), List.of()).stream()
 				.map(TagOnlyNameModel::fromTermTagJpa).toList())
 			.build()).toList();

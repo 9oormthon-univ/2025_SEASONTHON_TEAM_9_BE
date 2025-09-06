@@ -49,6 +49,7 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
 	public List<BookmarkFolderModel> getBookmarkFolders(String userId) {
 		UserJpaEntity userJpa = userJpaRepository.findById(userId).orElseThrow();
 		List<BookmarkFolderJpaEntity> folderJpa = bookmarkFolderJpaRepository.findByUser(userJpa);
+
 		return folderJpa.stream().map(BookmarkFolderModel::fromJpa).toList();
 	}
 
@@ -65,6 +66,8 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
 				.user(userJpa)
 				.build()
 		);
+		folderJpa.incrementBookmarkCount();
+		bookmarkFolderJpaRepository.save(folderJpa);
 	}
 
 	@Override
@@ -76,6 +79,8 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
 		BookmarkJpaEntity bookmarkJpa
 			= bookmarkJpaRepository.findByFolderAndTerm(folderJpa, termJpa).orElseThrow();
 		bookmarkJpaRepository.delete(bookmarkJpa);
+		folderJpa.decrementBookmarkCount();
+		bookmarkFolderJpaRepository.save(folderJpa);
 	}
 
 	@Override
@@ -104,7 +109,7 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
 				return TermOnlyNameAndDefModel.builder()
 					.id(tj.getId())
 					.nameKr(tj.getTermKorean())
-					.definition(tj.getDefinition())
+					.definitions(tj.getDefinitions())
 					.tags(tags.stream().map(TagOnlyNameModel::fromTermTagJpa).toList())
 					.build();
 			}).toList();

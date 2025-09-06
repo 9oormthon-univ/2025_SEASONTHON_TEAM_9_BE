@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.clucid.server.terms.entity.controller.RealCreateTermRequest;
 import com.clucid.server.terms.entity.controller.TermPageParam;
 import com.clucid.server.auth.entity.UserDetailsImpl;
 import com.clucid.server.terms.entity.controller.CreateTermRequest;
@@ -21,6 +22,8 @@ import com.clucid.server.terms.entity.controller.RelateTermsRequest;
 import com.clucid.server.terms.entity.controller.UploadTermImageResponse;
 import com.clucid.server.terms.entity.model.TermOnlyNameAndDefModel;
 import com.clucid.server.terms.entity.model.TermWithTagAndRelModel;
+import com.clucid.server.terms.entity.model.external.CreateTermResponse;
+import com.clucid.server.terms.entity.model.external.CreateTermResult;
 import com.clucid.server.terms.entity.usecase.CreateTermCommand;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,4 +105,27 @@ public class TermController {
 			request.getTargetTermId());
 		return ResponseEntity.ok(GetOneTermResponse.fromModel(termWithTagAndRelModel));
 	}
+
+	@Operation(summary = "용어들 태그 연결. 개발용 API여서 따로 안씀")
+	@PostMapping("/api/terms/tags")
+	public ResponseEntity<Void> addTagsToTerm(
+		@RequestParam String termId,
+		@RequestParam String tagId
+	) {
+		termUseCase.addTagsToTerm(termId, tagId);
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/api/terms/test")
+	public ResponseEntity<CreateTermResult> test(@RequestParam String term) {
+		CreateTermResult result = termUseCase.test(term);
+		return ResponseEntity.ok(result);
+	}
+
+	@PostMapping("/api/terms/create")
+	public ResponseEntity<Void> createTermLlm(@RequestBody RealCreateTermRequest request) {
+		termUseCase.createRealTerm(request);
+		return ResponseEntity.ok().build();
+	}
+
 }

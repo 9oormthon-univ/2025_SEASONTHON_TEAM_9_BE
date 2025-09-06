@@ -1,5 +1,7 @@
 package com.clucid.server.terms.entity.model;
 
+import java.util.List;
+
 import com.clucid.server.terms.persist.jpa.TermJpaEntity;
 
 import lombok.AllArgsConstructor;
@@ -13,14 +15,17 @@ public class TermModel {
 	private String id;
 	private String nameKr;
 	private String nameEn;
-	private String definition;
+	// private String definition;
+	private List<String> definitions;
+	private List<String> examples;
+
 	private String imgUrl;
 	public static TermModel fromJpa(TermJpaEntity entity){
 		return TermModel.builder()
 			.id(entity.getId())
 			.nameKr(entity.getTermKorean())
 			.nameEn(entity.getTermEnglish())
-			.definition(entity.getDefinition())
+			.definitions(entity.getDefinitions())
 			.imgUrl(entity.getImgUrl())
 			.build();
 	}
@@ -28,7 +33,8 @@ public class TermModel {
 		return TermJpaEntity.builder()
 			.termKorean(model.getNameKr())
 			.termEnglish(model.getNameEn())
-			.definition(model.getDefinition())
+			.definitions(model.getDefinitions())
+			.examples(model.getExamples())
 			.imgUrl(model.getImgUrl())
 			.build();
 	}

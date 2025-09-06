@@ -14,7 +14,8 @@ public class TermWithTagAndRelModel {
 	private String id;
 	private String nameKr;
 	private String nameEn;
-	private String definition;
+	private List<String> definitions;
+	private List<String> examples;
 	private String imgUrl;
 	private List<TagOnlyNameModel> tags;
 	private List<TermOnlyNameAndDefModel> relations;
